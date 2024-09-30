@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     args.config_path = "";
 
     int sleeptime_ms = 40;
-    int glitch_strenght = 6;
+    int glitch_strength = 6;
     int glitch_intensity = 35;
 
     bool autocenter = true;
@@ -70,9 +70,9 @@ int main(int argc, char *argv[])
     {
 	Logger::PrintDebug("Config loaded succesfully.");
 
-    	output_tmp = new int(getParamFromConf(&config, "strenght"));
+    	output_tmp = new int(getParamFromConf(&config, "strength"));
     	if (*output_tmp != -1)
-    	    glitch_strenght = *output_tmp;
+    	    glitch_strength = *output_tmp;
     	delete output_tmp;
 
     	output_tmp = new int(getParamFromConf(&config, "intensity"));
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     {
         getmaxyx(stdscr, maxY, maxX);
 
-        if (fileX + (2 * glitch_strenght) > maxX)
+        if (fileX + (2 * glitch_strength) > maxX)
         {
             clear();
             move(maxY / 2, maxX / 2 - 21);
@@ -135,21 +135,21 @@ int main(int argc, char *argv[])
 
             if ((rand() % glitch_intensity + 1) == 1)
             {
-                num = rand() % glitch_strenght + 1;
+                num = rand() % glitch_strength + 1;
             }
 
             int rev_effect = rand() % 2;
 
             if (autocenter)
             {
-                args.ox = 0.5 * (maxX - (fileX + 2 * glitch_strenght));
+                args.ox = 0.5 * (maxX - (fileX + 2 * glitch_strength));
                 args.oy = 0.5 * (maxY - lines.size());
             }
 
             if (rev_effect == 1)
-                move(args.oy + i, args.ox - num + glitch_strenght);
+                move(args.oy + i, args.ox - num + glitch_strength);
             else
-                move(args.oy + i, args.ox + num + glitch_strenght);
+                move(args.oy + i, args.ox + num + glitch_strength);
 
             printw("%s", str.c_str());
 
