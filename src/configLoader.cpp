@@ -8,6 +8,22 @@
 
 using namespace std;
 
+int ConfigLoader::GetParamFromConf(map<string, int>* conf, const string &param)
+{
+    auto it = conf->find(param);
+
+    if (it != conf->end())
+    {
+        Logger::PrintLog("Param '" + param + "' = " + to_string(it->second));
+        return it->second;
+    } 
+    else
+    {
+        Logger::PrintWarn("Param '" + param + "' not found in config file.");
+        return -1;
+    }
+}
+
 map<string, int> ConfigLoader::LoadConf(const string& filename) {
     map<string, int> config;
     ifstream file(filename);

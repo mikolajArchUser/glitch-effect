@@ -11,6 +11,7 @@ class ConfigLoader
 {
     public:
 	static std::map<std::string, int> LoadConf(const std::string &path);
+        static int GetParamFromConf(std::map<std::string, int>* conf, const std::string& param);
 };
 
 #endif

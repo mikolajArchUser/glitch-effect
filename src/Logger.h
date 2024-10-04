@@ -13,6 +13,8 @@ class Logger
         static void SetOverrideFiltering(const bool overrideFiltering);
         static bool GetOverrideFiltering();
 
+        static void SetNCursesMode(const bool mode);
+
         static void PrintDebug(const std::string message, const int layer);
 	static void PrintDebug(const std::string message);
 	static void PrintLog(const std::string message, const int layer);
@@ -25,12 +27,15 @@ class Logger
     private:
 	static int verbosity;
         static bool overrideFiltering;
+        static bool ncursesMode;
 
         static const std::string BLUE;
 	static const std::string GREEN; 
 	static const std::string YELLOW;
 	static const std::string RED;	
 	static const std::string RESET;
+
+        static void print(const std::string &message, const int prior, const int layer);
 };
 
 #endif

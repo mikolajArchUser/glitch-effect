@@ -9,24 +9,10 @@
 #include "FileLoader.h"
 #include "ConfigLoader.h"
 #include "ArgInterpreter.h"
+#include "AsciiBuffer.h"
+#include "Printer.h"
 
 using namespace std;
-
-int getParamFromConf(map<string, int>* conf, const string& param)
-{
-    auto it = conf->find(param);
-
-    if (it != conf->end())
-    {
-        Logger::PrintLog("Param '" + param + "' = " + to_string(it->second));
-        return it->second;
-    } 
-    else
-    {
-        Logger::PrintWarn("Param '" + param + "' not found in config file.");
-        return -1;
-    }
-}
 
 int main(int argc, char *argv[])
 {
@@ -38,10 +24,8 @@ int main(int argc, char *argv[])
     args.config_path = "";
 
     int sleeptime_ms = 40;
-    int glitch_strength = 6;
-    int glitch_intensity = 35;
-
-    bool autocenter = true;
+    int effectStrength = 8;
+    int effectIntensity = 35;
 
     args = ArgInterpreter::GetArgs(argc, argv);
     if (args.help_requested)
@@ -61,29 +45,26 @@ int main(int argc, char *argv[])
     if (args.config_specified)
     {
         config = ConfigLoader::LoadConf(args.config_path);
-        conf_exit_code = getParamFromConf(&config, "exit-code");
+        conf_exit_code = ConfigLoader::GetParamFromConf(&config, "exit-code");
     }
 
-    int* output_tmp;
+    int output_tmp;
 
     if (conf_exit_code == 0)
     {
 	Logger::PrintDebug("Config loaded succesfully.");
 
-    	output_tmp = new int(getParamFromConf(&config, "strength"));
-    	if (*output_tmp != -1)
-    	    glitch_strength = *output_tmp;
-    	delete output_tmp;
+    	output_tmp = ConfigLoader::GetParamFromConf(&config, "strength");
+    	if (output_tmp != -1)
+    	    effectStrength = output_tmp;
 
-    	output_tmp = new int(getParamFromConf(&config, "intensity"));
-    	if (*output_tmp != -1)
-    	    glitch_intensity = *output_tmp;
-    	delete output_tmp;
+    	output_tmp = ConfigLoader::GetParamFromConf(&config, "intensity");
+    	if (output_tmp != -1)
+    	    effectIntensity = output_tmp;
 
-	output_tmp = new int(getParamFromConf(&config, "sleeptime"));
-    	if (*output_tmp != -1)
-    	    sleeptime_ms = *output_tmp;
-    	delete output_tmp;
+	output_tmp = ConfigLoader::GetParamFromConf(&config, "sleeptime");
+    	if (output_tmp != -1)
+    	    sleeptime_ms = output_tmp;
     }
 
     const vector<string> lines = FileLoader::GetLines(args.ascii_path);
@@ -94,67 +75,18 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    setlocale(LC_ALL, "C.UTF-8");
-    initscr();
-    cbreak();
-    noecho();
-    nodelay(stdscr, TRUE);
-    keypad(stdscr, TRUE);
-
-    curs_set(0);
-
-    int fileX = 0;
-    int maxX, maxY;
-
-    for (const string &str : lines)
-    {
-        if (static_cast<int>(str.length()) > fileX)
-            fileX = str.length();
-    }
-
-
+    Printer::init(sleeptime_ms, args.ox, args.oy);
+    AsciiBuffer buffer = AsciiBuffer(lines);
+    
     while (true)
     {
-        getmaxyx(stdscr, maxY, maxX);
+        buffer.VerticalDistort(effectIntensity, effectStrength);
+        
+        Printer::print(buffer, effectStrength);
 
-        if (fileX + (2 * glitch_strength) > maxX)
-        {
-            clear();
-            move(maxY / 2, maxX / 2 - 21);
-            printw("It's a little bit claustrophobic in here...");
-	    refresh();
-	    usleep(200000);
-	    continue;
-        }
-
-        clear();
-        int i = 0;
-        for (const string &str : lines)
-        {
-            int num = 0;
-
-            if ((rand() % glitch_intensity + 1) == 1)
-            {
-                num = rand() % glitch_strength + 1;
-            }
-
-            int rev_effect = rand() % 2;
-
-            if (autocenter)
-            {
-                args.ox = 0.5 * (maxX - (fileX + 2 * glitch_strength));
-                args.oy = 0.5 * (maxY - lines.size());
-            }
-
-            if (rev_effect == 1)
-                move(args.oy + i, args.ox - num + glitch_strength);
-            else
-                move(args.oy + i, args.ox + num + glitch_strength);
-
-            printw("%s", str.c_str());
-
-            i++;
-        }
+        buffer.ResetDistorted();
+        
+        Logger::SetNCursesMode(true);
 
 	int ch = getch();
 	if (ch == 'q')
@@ -164,7 +96,7 @@ int main(int argc, char *argv[])
 
         usleep(1000 * sleeptime_ms);
     }
-
+    
     endwin();
     return 0;
 }
