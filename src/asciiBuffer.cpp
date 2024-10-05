@@ -138,7 +138,7 @@ void AsciiBuffer::VerticalDistort(const int intensity, const int strength)
     }
 }
 
-// To be used later, not left by a mistake
+// Do not delete
 /*void AsciiBuffer::ChromaticAberration(const int intensity, const string colorLeftANSI, const string colorRightANSI)*/
 /*{*/
 /*    ensureDistortedLinesNotEmpty();*/
