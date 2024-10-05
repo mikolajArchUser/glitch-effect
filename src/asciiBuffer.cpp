@@ -110,7 +110,6 @@ void AsciiBuffer::VerticalDistort(const int intensity, const int strength)
 {
     ensureDistortedLinesNotEmpty();
     
-    int i = 0;
     string spaces;
     int num;
     for (string &str : distortedLines)
@@ -133,8 +132,6 @@ void AsciiBuffer::VerticalDistort(const int intensity, const int strength)
 
         spaces = string(num, ' ');
         str = spaces + str + spaces;
-
-        i++;
     }
 }
 
