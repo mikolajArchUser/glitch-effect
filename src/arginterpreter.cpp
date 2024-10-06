@@ -83,7 +83,7 @@ argstruct ArgInterpreter::GetArgs(int argc, char* argv[])
                         return args;
                     }
 
-                    Logger::SetVerbosity(val);
+                    Logger::SetVerbosity(Logger::LogLevel(val));
                     Logger::PrintDebug(string("Verbosity set to: ") + optarg);
                 }
                 break;

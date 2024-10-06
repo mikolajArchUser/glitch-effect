@@ -6,9 +6,19 @@
 
 class Logger 
 {
+    
+
     public:
-	static void SetVerbosity(const int verbosity);
-	static int GetVerbosity();
+        enum LogLevel
+        {
+         All = 0,
+            Standard = 1,
+            Quiet = 2,
+         ErrorsOnly = 3
+        };
+
+        static void SetVerbosity(const Logger::LogLevel logLevel);
+	static Logger::LogLevel GetVerbosity();
 
         static void SetOverrideFiltering(const bool overrideFiltering);
         static bool GetOverrideFiltering();
@@ -25,7 +35,7 @@ class Logger
 	static void PrintErr(const std::string message);
 
     private:
-	static int verbosity;
+	static Logger::LogLevel logLevel;
         static bool overrideFiltering;
         static bool ncursesMode;
 

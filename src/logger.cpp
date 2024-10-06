@@ -17,18 +17,15 @@ const string Logger::RESET = "\033[0m";
 
 
 // Init
-int Logger::verbosity = 1;
+Logger::LogLevel Logger::logLevel = Logger::Standard;
 bool Logger::overrideFiltering = false;
 bool Logger::ncursesMode = false;
 
 
 // Setters
-void Logger::SetVerbosity(const int verbosity) 
+void Logger::SetVerbosity(const Logger::LogLevel logLevel) 
 {
-    if (verbosity >= 0 && verbosity < 4)
-        Logger::verbosity = verbosity;
-    else
-        Logger::PrintErr("Verbsity value must be between 0 and 3!");
+    Logger::logLevel = logLevel;
 }
 
 void Logger::SetOverrideFiltering(const bool overrideFiltering)
@@ -43,9 +40,9 @@ void Logger::SetNCursesMode(const bool mode)
 
 
 // Getters
-int Logger::GetVerbosity()
+Logger::LogLevel Logger::GetVerbosity()
 {
-    return Logger::verbosity;
+    return Logger::logLevel;
 }
 
 bool Logger::GetOverrideFiltering()
@@ -100,7 +97,7 @@ void Logger::PrintErr(const string message)
 
 void Logger::print(const string &message, const int prior, const int layer)
 {   
-    if (verbosity > prior && !overrideFiltering) return;
+    if (logLevel > prior && !overrideFiltering) return;
     
     string header;
     string spaces = string(layer * 2, ' ');
