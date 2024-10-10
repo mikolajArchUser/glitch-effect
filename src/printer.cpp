@@ -16,6 +16,7 @@ int Printer::offsetY = 0;
 
 bool Printer::autocenter = true;
 
+// INIT FUNCTION
 void Printer::init(const int sleeptimeMS, const int offsetX, const int offsetY)
 {
     Printer::sleeptimeMS = sleeptimeMS;
@@ -30,11 +31,22 @@ void Printer::init(const int sleeptimeMS, const int offsetX, const int offsetY)
     noecho();
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
+    start_color();
+    use_default_colors();
     curs_set(0);
 
     Logger::SetNCursesMode(true);
 }
 
+
+// SETTERS
+void Printer::SetColors(const Printer::Color fg, const Printer::Color bg)
+{
+    init_pair(1, fg, bg);
+}
+
+
+// PRINTING FUNCTIONS
 void Printer::print(AsciiBuffer &buffer, const int maxVerticalDistortion)
 {
     int maxX, maxY;
@@ -55,6 +67,8 @@ void Printer::print(AsciiBuffer &buffer, const int maxVerticalDistortion)
     }
 
     clear();
+    attron(COLOR_PAIR(1));
+    bkgd(COLOR_PAIR(1));
 
     int i = 0;
     int x = 0;
@@ -71,4 +85,6 @@ void Printer::print(AsciiBuffer &buffer, const int maxVerticalDistortion)
         printw("%s", line.c_str());
         i++;
     }
+
+    attroff(COLOR_PAIR(1));
 }

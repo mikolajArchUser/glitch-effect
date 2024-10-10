@@ -1,11 +1,10 @@
-#include <stdexcept>
-#include <string>
 #include <unistd.h>
 #include <getopt.h>
 #include <iostream>
 
 #include "ArgInterpreter.h"
 #include "Logger.h"
+#include "Printer.h"
 
 using namespace std;
 
@@ -26,6 +25,30 @@ int ArgInterpreter::strToInt(string str)
     return result;
 }
 
+int ArgInterpreter::strToColorID(const string colorStr)
+{
+    if (colorStr == "NONE")
+        return Printer::NONE;
+    else if (colorStr == "BLACK")
+        return Printer::BLACK;
+    else if (colorStr == "RED")
+        return Printer::RED;
+    else if (colorStr == "GREEN")
+        return Printer::GREEN;
+    else if (colorStr == "YELLOW")
+        return Printer::YELLOW;
+    else if (colorStr == "BLUE")
+        return Printer::BLUE;
+    else if (colorStr == "MAGENTA")
+        return Printer::MAGENTA;
+    else if (colorStr == "CYAN")
+        return Printer::CYAN;
+    else if (colorStr == "WHITE")
+        return Printer::WHITE;
+    Logger::PrintErr("Unknown color. Possible choices: NONE, BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE.");
+    return -2;
+}
+
 void PrintUsage()
 {
     cout << "Usage: glitch [options]" << endl;
@@ -35,6 +58,8 @@ void PrintUsage()
     cout << "  -c <path>: specify config file path" << endl;
     cout << "  -i <path>: specify the ascii file to display" << endl;
     cout << "  -v <int>: Set log verbosity" << endl;
+    cout << "  --foreground <color>: Set foreground color" << endl;
+    cout << "  --background <color>: Set background color" << endl;
 }
 
 argstruct ArgInterpreter::GetArgs(int argc, char* argv[])
@@ -43,8 +68,11 @@ argstruct ArgInterpreter::GetArgs(int argc, char* argv[])
     
     static struct option long_options[] = 
     {
-        {"help", no_argument, nullptr, 'n'},
+        {"help", no_argument, nullptr, '1'},
+        {"foreground", required_argument, nullptr, '2'},
+        {"background", required_argument, nullptr, '3'},
         {0, 0, 0, 0}
+
     };
 
     int arg;
@@ -129,10 +157,42 @@ argstruct ArgInterpreter::GetArgs(int argc, char* argv[])
                 }
                 break;
 
-            case 'n':
+            case '1':
                 args.help_requested = true;
                 PrintUsage();
                 return args;
+
+            case '2':
+                if (optarg)
+                {
+                    int val = strToColorID(optarg);
+
+                    if (val == -2)
+                    {
+                        args.exit = true;
+                        return args;
+                    }
+
+                    args.foreground = val;
+                    Logger::PrintDebug(string("Foreground color set to: ") + optarg);
+                }
+                break;
+
+            case '3':
+                if (optarg)
+                {
+                    int val = strToColorID(optarg);
+
+                    if (val == -2)
+                    {
+                        args.exit = true;
+                        return args;
+                    }
+
+                    args.background = val;
+                    Logger::PrintDebug(string("Background color set to: ") + optarg);
+                }
+                break;
         }
     }
 

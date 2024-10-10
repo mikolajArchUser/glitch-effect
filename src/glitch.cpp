@@ -74,14 +74,16 @@ int main(int argc, char *argv[])
         Logger::PrintWarn("Nothing to display. Quitting...");
         return 0;
     }
-
+    
     Printer::init(sleeptime_ms, args.ox, args.oy);
+    Printer::SetColors(Printer::Color(args.foreground), Printer::Color(args.background));
+
     AsciiBuffer buffer = AsciiBuffer(lines);
     
     while (true)
     {
         buffer.VerticalDistort(effectIntensity, effectStrength);
-        
+         
         Printer::print(buffer, effectStrength);
 
         buffer.ResetDistorted();

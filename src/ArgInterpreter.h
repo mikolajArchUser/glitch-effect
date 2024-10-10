@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <string>
 
+#include "Printer.h"
+
 struct argstruct
 {
     std::string config_path = "../conf/config.conf";
@@ -11,6 +13,9 @@ struct argstruct
 
     int ox;
     int oy;
+
+    int foreground = Printer::NONE;
+    int background = Printer::NONE;
 
     bool exit = false;
     bool config_specified = false;
@@ -24,6 +29,7 @@ class ArgInterpreter
 
     private:
         static int strToInt(std::string str);
+        static int strToColorID(const std::string colorStr);
 };
 
 #endif
